@@ -1832,3 +1832,4 @@ c = get_config()  #noqa
 
 #  See also: BaseKernelWebsocketConnection.session
 # c.ZMQChannelsWebsocketConnection.session = None
+c.ContentsManager.default_jupytext_formats = "ipynb,py"
