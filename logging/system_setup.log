@@ -1,0 +1,219 @@
+# Tools for  compiling C/C++ programs - GCC, G++, make, lobc6-dev and related headers
+Installing: build-essential
+# Command-line tools for downloading files
+Installing: curl wget
+# cat alternative - better syntax highlighting and git integration
+Installing: bat
+# For handling zip archives
+Installing: unzip
+# Verion control for code
+Installing: git
+
+# Installing neovim
+# Date: Monday 02 June 2025 05:52:04 PM IST
+
+Installed via apt: neovim
+
+# Install kitty terminal emulator (APT)
+# Date: Monday 02 June 2025 10:49:47 PM IST
+
+Installed via apt: kitty
+
+# Manual Note
+# Date: Monday 02 June 2025 10:53:05 PM IST
+
+Installed and switched to the kitty terminal
+
+# Installing zsh and oh-my-zsh for enhanced shell features (APT)
+# Date: Monday 02 June 2025 10:55:20 PM IST
+
+Installed via apt: zsh
+
+# Install FiraCode Nerd Font (APT)
+# Date: Monday 02 June 2025 11:51:23 PM IST
+
+Installed via apt: fonts-firacode
+
+# Manual Note
+# Date: Tuesday 03 June 2025 12:50:52 AM IST
+
+Installed Powerlevel10k theme and configured it
+
+# Fuzzy seach for searching files, history, git branches, etc. (APT)
+# Date: Tuesday 03 June 2025 12:59:09 AM IST
+
+Installed via apt: fzf
+
+# Manual Note
+# Date: Tuesday 03 June 2025 01:07:58 AM IST
+
+Installed miniconda using the instructions from the website and created a basic Data Science Python venv with Python 3.13.3 and numpy, pandas, matplotlib with the name py313
+
+# Installing htop for system monitoring through the terminal (APT) -- UPDATE: Deleted this now since I liked btm more
+# Date: Tuesday 03 June 2025 01:10:37 AM IST
+
+Installed via apt: htop
+
+# Installing btm for system monitoring through the terminal (APT)
+# Date: Tuesday 03 June 2025 01:14:40 AM IST
+
+Installed via apt: btm
+
+# Installing ripgrep for quick search (used alongside fzf and telescope.neovim (not installed this plugin yet but it is a use case)) (APT)
+# Date: Tuesday 03 June 2025 12:02:13 PM IST
+
+Installed via apt: ripgrep
+
+# Installing fd-find for a better experience than the default find - works well with fzf (APT)
+# Date: Tuesday 03 June 2025 12:03:42 PM IST
+
+Installed via apt: fd-find
+
+# Installing ranger for having a file manager in the terminal itself whenever needed (APT)
+# Date: Tuesday 03 June 2025 12:18:42 PM IST
+
+Installed via apt: ranger
+
+# Installing nodejs since it is required by some neovim plugins (APT)
+# Date: Tuesday 03 June 2025 01:16:06 PM IST
+
+Installed via apt: nodejs npm
+
+# Installed lazy plugins in neovim
+
+# Installed nvm (using curl) since the copilot plugin in neovim required node version > 20 and updated node to v20 using nvm
+
+# Installing imagemagick to support money printer turbo project (APT)
+# Date: Saturday 07 June 2025 12:31:31 AM IST
+
+Installed via apt: imagemagick
+
+# Installing ffmpeg to support the money printer project (APT)
+# Date: Saturday 07 June 2025 12:32:28 AM IST
+
+Installed via apt: ffmpeg
+
+# Installing GitHub CLI tool to be able to create remote repos in workflows remotely (APT)
+# Date: Saturday 07 June 2025 08:22:35 PM IST
+
+Installed via apt: gh
+
+# Manual Note
+# Date: Sunday 08 June 2025 12:07:24 AM IST
+
+Installed Obsidian using the official .deb file and set up the script .local/bin/sync-all-vaults.sh to pull and push all the changes in the obisidian notes with one repo per vault (repo name: vaultName-notes)
+
+# Installing dependencies of Docker and its safe installation (certificate, key verification, etc.) before installing docker (APT)
+# Date: Sunday 08 June 2025 10:33:11 PM IST
+
+Installed via apt:   ca-certificates curl gnupg lsb-release
+
+# Installing dependencies of Docker and its safe installation (certificate, key verification, etc.) before installing docker (APT)
+# Date: Sunday 08 June 2025 10:34:28 PM IST
+
+Installed via apt: ca-certificates gnupg lsb-release
+
+# Installing docker and all its required tools (APT)
+# Date: Sunday 08 June 2025 10:39:53 PM IST
+
+Installed via apt: docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Installing espanso for system-wide autocorrections (APT)
+# Date: Wednesday 25 June 2025 05:48:16 PM IST
+
+Installed via apt: ./espanso-debian-x11-amd64.deb
+
+# Installing espanso for system-wide autocorrections (APT)
+# Date: Wednesday 25 June 2025 05:51:07 PM IST
+
+Installed via apt: ./espanso-debian-x11-amd64.deb
+
+# Installing libwxgtk3.0-gtk3-dev since espanso has a dependency on it and Mint does not have it by default (APT)
+# Date: Wednesday 25 June 2025 06:46:56 PM IST
+
+Installed via apt: libwxgtk3.0-gtk3-dev
+
+# Installing libwxgtk3.0-gtk3-0v5 since espanso has a dependency on it and Mint does not have it by default (APT)
+# Date: Wednesday 25 June 2025 06:47:48 PM IST
+
+Installed via apt: libwxgtk3.0-gtk3-0v5
+
+# Installing libwxgtk3.0-gtk3-0v5 since espanso has a dependency on it and Mint does not have it by default (APT)
+# Date: Wednesday 25 June 2025 06:51:34 PM IST
+
+Installed via apt: /home/raisama/Downloads/libwxgtk3.0-gtk3-dev_3.0.5.1+dfsg-4_amd64.deb
+
+# Installing glow to render markdowns in kitty (APT)
+# Date: Sunday 12 October 2025 03:01:38 PM IST
+
+Installed via apt: glow
+
+# Installing glow to render markdowns in kitty (APT)
+# Date: Sunday 12 October 2025 03:04:49 PM IST
+
+Installed via apt: glow
+
+# Installing glow to render markdowns in kitty (APT)
+# Date: Sunday 12 October 2025 03:05:05 PM IST
+
+Installed via apt: glow
+
+# Installing inotify to run scripts automatically when files are created (for organizing leetcode solutions) (APT)
+# Date: Wednesday 15 October 2025 12:50:09 AM IST
+
+Installed via apt: inotify-tools
+
+# Installing Steam (APT)
+# Date: Wednesday 26 November 2025 05:42:56 PM IST
+
+Installed via apt: steam
+
+# Installing zoxide which is better than cd (APT)
+# Date: Sunday 24 May 2026 09:29:25 PM IST
+
+Installed via apt: zoxide
+
+# Installing atuin for searchable, contextual and much faster than default shell history (APT)
+# Date: Sunday 24 May 2026 09:30:30 PM IST
+
+Installed via apt: atuin
+
+# Manual Note
+# Date: Sunday 24 May 2026 09:41:45 PM IST
+
+Installed atuin to enable a much faster and better shell history
+
+# Manual Note
+# Date: Sunday 24 May 2026 11:19:18 PM IST
+
+Conda installed JupyterLab inside the p313 env
+
+# marimo (pip)
+# Date: Sunday 24 May 2026 11:23:03 PM IST
+
+Installed via pip: 
+
+# marimo (pip)
+# Date: Sunday 24 May 2026 11:25:18 PM IST
+
+Installed via pip: 
+
+# Installing marimo for a more modern notebook experience than Jupyter (pip)
+# Date: Sunday 24 May 2026 11:26:30 PM IST
+
+Installed via pip: marimo
+
+# Installing Quarto to assist with exporting Python scripts/notebooks to different formats and ecosystems (APT)
+# Date: Sunday 24 May 2026 11:37:01 PM IST
+
+Installed via apt: quarto
+
+# Installing VS Code (APT)
+# Date: Sunday 31 May 2026 09:03:05 PM IST
+
+Installed via apt: code
+
+# Manual Note
+# Date: Sunday 07 June 2026 07:23:24 PM IST
+
+Reorganized all configs, scripts, etc. inside everything folder

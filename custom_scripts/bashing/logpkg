@@ -1,0 +1,53 @@
+#!/bin/bash
+
+LOG_FILE="$HOME/everything/system/logging/system_setup.log"
+
+log_header() {
+  echo -e "\n# $1\n# Date: $(date)\n" >> "$LOG_FILE"
+}
+
+logapt() {
+  log_header "$1 (APT)"
+  shift
+  echo "Installed via apt: $@" >> "$LOG_FILE"
+  sudo apt install -y "$@"
+}
+
+logflat() {
+  log_header "$1 (Flatpak)"
+  shift
+  echo "Installed via flatpak: $@" >> "$LOG_FILE"
+  flatpak install -y "$@"
+}
+
+logpip() {
+  log_header "$1 (pip)"
+  shift
+  echo "Installed via pip: $@" >> "$LOG_FILE"
+  pip install "$@"
+}
+
+logconda() {
+  log_header "$1 (conda)"
+  shift
+  echo "Installed via conda: $@" >> "$LOG_FILE"
+  conda install -y "$@"
+}
+
+lognote() {
+  log_header "Manual Note"
+  echo "$@" >> "$LOG_FILE"
+}
+
+# === Subcommand dispatcher ===
+case "$1" in
+  apt) shift; logapt "$@";;
+  flatpak) shift; logflat "$@";;
+  pip) shift; logpip "$@";;
+  conda) shift; logconda "$@";;
+  note) shift; lognote "$@";;
+  *)
+    echo "Usage: logpkg {apt|flatpak|pip|conda|note} <comment> <packages>"
+    exit 1
+    ;;
+esac
