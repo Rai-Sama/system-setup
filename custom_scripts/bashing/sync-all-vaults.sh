@@ -6,11 +6,15 @@
 
 BASE_DIR="$HOME/everything/notes"
 GITHUB_USER="rai-sama"
+
+SCRIPT_DIR="$HOME/everything/system/custom_scripts/bashing"
+source "$SCRIPT_DIR/logger.sh"
+
 LOGFILE="$HOME/everything/system/logging/obsidian_sync.log"
 
 # Ensure gh CLI is installed
 if ! command -v gh >/dev/null 2>&1; then
-  echo "$(date): ERROR: gh CLI is not installed. Aborting." >> "$LOGFILE"
+  log "ERROR: gh CLI is not installed. Aborting." "$LOGFILE"
   exit 1
 fi
 
@@ -21,7 +25,7 @@ for vault_path in "$BASE_DIR"/*/; do
   repo_name="${vault_name}-notes"
   cd "$vault_path" || continue
 
-  echo "$(date): Processing vault '$vault_name'..." >> "$LOGFILE"
+  log "Processing vault '$vault_name'..." "$LOGFILE"
 
   # 1. Initialize git if missing
   if [ ! -d ".git" ]; then
@@ -29,7 +33,7 @@ for vault_path in "$BASE_DIR"/*/; do
     echo ".obsidian/" > .gitignore
     git add .gitignore
     git commit -m "chore: initial .gitignore for $vault_name"
-    echo "$(date): Initialized git repo and .gitignore" >> "$LOGFILE"
+    log "Initialized git repo and .gitignore" "$LOGFILE"
   fi
 
   # 2. Ensure .obsidian/ is ignored
@@ -37,7 +41,7 @@ for vault_path in "$BASE_DIR"/*/; do
     echo ".obsidian/" >> .gitignore
     git add .gitignore
     git commit -m "chore: update .gitignore to ignore .obsidian/"
-    echo "$(date): Updated .gitignore" >> "$LOGFILE"
+    log "Updated .gitignore" "$LOGFILE"
   fi
 
   # 3. Add or verify remote origin
@@ -45,25 +49,25 @@ for vault_path in "$BASE_DIR"/*/; do
     # Create remote if it doesn't exist
     if ! gh repo view "${GITHUB_USER}/${repo_name}" >/dev/null 2>&1; then
       gh repo create "${GITHUB_USER}/${repo_name}" --private --source=. --remote=origin
-      echo "$(date): Created remote repo ${repo_name}" >> "$LOGFILE"
+      log "Created remote repo ${repo_name}" "$LOGFILE"
     else
       git remote add origin "git@github.com:${GITHUB_USER}/${repo_name}.git"
-      echo "$(date): Added existing remote origin" >> "$LOGFILE"
+      log "Added existing remote origin" "$LOGFILE"
     fi
   fi
 
   # 4. Pull remote changes (if any)
   git pull --rebase origin main 2>/dev/null || git pull --rebase origin master 2>/dev/null || true
-  echo "$(date): Pulled remote changes" >> "$LOGFILE"
+  log "Pulled remote changes" "$LOGFILE"
 
   # 5. Add, commit, and push local changes
   git add .
   if ! git diff --cached --quiet; then
     git commit -m "chore: sync vault '$vault_name' at $(date '+%Y-%m-%d %H:%M')"
     git push -u origin HEAD
-    echo "$(date): Pushed changes" >> "$LOGFILE"
+    log "Pushed changes" "$LOGFILE"
   else
-    echo "$(date): No changes to commit" >> "$LOGFILE"
+    log "No changes to commit" "$LOGFILE"
   fi
 
 done
