@@ -232,3 +232,8 @@ Installed via apt: adb
 # Date: Monday 15 June 2026 12:59:14 AM IST
 
 Installed via pip: pillow
+
+# Installing HEIF compatibility for pillow to handle iphone media (pip)
+# Date: Monday 15 June 2026 01:51:13 AM IST
+
+Installed via pip: pillow-heif
