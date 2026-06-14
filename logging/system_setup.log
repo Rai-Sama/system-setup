@@ -222,3 +222,8 @@ Reorganized all configs, scripts, etc. inside everything folder
 # Date: Sunday 07 June 2026 10:52:41 PM IST
 
 Installed via pip: jupytext
+
+# Installing adb to interact with phone (APT)
+# Date: Sunday 14 June 2026 07:08:55 PM IST
+
+Installed via apt: adb
