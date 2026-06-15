@@ -242,3 +242,8 @@ Installed via pip: pillow-heif
 # Date: Monday 15 June 2026 01:17:08 PM IST
 
 Installed via pip: flask
+
+# Installing reverse geocoding to map coordinated to locations (pip)
+# Date: Monday 15 June 2026 03:14:21 PM IST
+
+Installed via pip: reverse_geocoder
