@@ -247,3 +247,13 @@ Installed via pip: flask
 # Date: Monday 15 June 2026 03:14:21 PM IST
 
 Installed via pip: reverse_geocoder
+
+# Installing rawpy to handle raw .dng camera sensor files which cannot be handled by pillow (pip)
+# Date: Sunday 21 June 2026 12:28:11 AM IST
+
+Installed via pip: rawpy
+
+# Installing exifread to handle live photos from iPhones (pip)
+# Date: Sunday 21 June 2026 12:29:56 AM IST
+
+Installed via pip: exifread
