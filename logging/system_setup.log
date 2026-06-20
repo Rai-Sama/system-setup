@@ -257,3 +257,13 @@ Installed via pip: rawpy
 # Date: Sunday 21 June 2026 12:29:56 AM IST
 
 Installed via pip: exifread
+
+# Installing cmake to have a C++ compiler for using dlib library in Python for ML models for face recognition, etc. (APT)
+# Date: Sunday 21 June 2026 01:36:31 AM IST
+
+Installed via apt: cmake
+
+# Installing dlib, face_recognition, scikit-learn and numpy to enable facial recognition in media-archive project (pip)
+# Date: Sunday 21 June 2026 01:39:00 AM IST
+
+Installed via pip: dlib face_recognition scikit-learn numpy
