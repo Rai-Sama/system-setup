@@ -15,11 +15,12 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Plugin setup
 require("lazy").setup({
-  -- 1. Theme: Catppuccin
+-- 1. Theme: Catppuccin
   {
     "catppuccin/nvim",
     name = "catppuccin",
     priority = 1000,
+    lazy = false, -- ADDED: This strictly forces it to load before anything else
     config = function()
       require("catppuccin").setup({
         flavour = "mocha",
@@ -42,7 +43,7 @@ require("lazy").setup({
     config = function()
       require("lualine").setup({
         options = {
-          theme = "catppuccin",
+          theme = "auto", -- CHANGED: "auto" immediately inherits the active colorscheme
           section_separators = { left = '', right = '' },
           component_separators = { left = '', right = '' },
         },
@@ -50,7 +51,7 @@ require("lazy").setup({
     end,
   },
 
-  -- 3. Fuzzy finder (Telescope)
+    -- 3. Fuzzy finder (Telescope)
   {
     "nvim-telescope/telescope.nvim",
     tag = "0.1.5",
@@ -98,10 +99,24 @@ require("lazy").setup({
     end,
   },
 
-  -- 7. GitHub Copilot
+-- 7. Codeium (Free AI Autocomplete)
   {
-    "github/copilot.vim",
-    event = "InsertEnter",
+    "Exafunction/codeium.vim",
+    event = "BufEnter",
+    config = function()
+      -- Disable default tab if it conflicts, but usually it works out of the box
+      vim.g.codeium_disable_bindings = 1
+      
+      -- Set your own keybindings
+      -- Press Tab to accept the suggestion
+      vim.keymap.set('i', '<Tab>', function() return vim.fn['codeium#Accept']() end, { expr = true, silent = true })
+      -- Press Alt+] to cycle to the next suggestion
+      vim.keymap.set('i', '<M-]>', function() return vim.fn['codeium#CycleCompletions'](1) end, { expr = true, silent = true })
+      -- Press Alt+[ to cycle to the previous suggestion
+      vim.keymap.set('i', '<M-[>', function() return vim.fn['codeium#CycleCompletions'](-1) end, { expr = true, silent = true })
+      -- Press Ctrl+x to dismiss a suggestion you don't want
+      vim.keymap.set('i', '<C-x>', function() return vim.fn['codeium#Clear']() end, { expr = true, silent = true })
+    end
   },
 
   -- 8. LeetCode plugin
@@ -119,19 +134,23 @@ require("lazy").setup({
     },
   },
 
-  -- NEW: 9. Native LSP Config (No extra package managers)
+-- 9. Native LSP Config (Neovim 0.11+ standard)
   {
     "neovim/nvim-lspconfig",
     config = function()
-      local lspconfig = require("lspconfig")
-      -- Requires pyright installed on your OS (e.g., pip install pyright)
-      lspconfig.pyright.setup({})
-      -- Requires clangd installed on your OS (e.g., sudo apt install clangd)
-      lspconfig.clangd.setup({})
+      -- Start the LSP servers using Neovim's native engine
+      -- (Still requires pyright and clangd installed on your OS)
+      vim.lsp.enable("pyright")
+      vim.lsp.enable("clangd")
       
-      -- Basic LSP keymaps
-      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = "Go to Definition" })
-      vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = "Hover Documentation" })
+      -- Attach keymaps only when an LSP connects to a buffer
+      vim.api.nvim_create_autocmd('LspAttach', {
+        callback = function(args)
+          local opts = { buffer = args.buf }
+          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+          vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+        end,
+      })
     end,
   },
 

@@ -267,3 +267,8 @@ Installed via apt: cmake
 # Date: Sunday 21 June 2026 01:39:00 AM IST
 
 Installed via pip: dlib face_recognition scikit-learn numpy
+
+# Installing pyright for enabling python LSP in Neovim (pip)
+# Date: Monday 06 July 2026 11:45:59 PM IST
+
+Installed via pip: pyright
