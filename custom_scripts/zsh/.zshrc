@@ -20,4 +20,9 @@ source ~/everything/system/custom_scripts/zsh/aliases.zsh
 source ~/everything/system/custom_scripts/zsh/tools.zsh
 source ~/everything/system/custom_scripts/zsh/functions.zsh
 
+# Source untracked local environment variables and secrets
+if [[ -f "$HOME/.local_secrets" ]]; then
+    source "$HOME/.local_secrets"
+fi
+
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

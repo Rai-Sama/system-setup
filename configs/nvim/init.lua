@@ -37,20 +37,30 @@ keymap("n", "<leader>r", function()
     local ft = vim.bo.filetype
     vim.cmd("write") -- Auto-save before running
     
+    local cmd = ""
     if ft == "python" then
-        vim.cmd("15split | term python %")
+        cmd = "python %"
     elseif ft == "sh" then
-        vim.cmd("15split | term bash %")
+        cmd = "bash %"
     elseif ft == "lua" then
-        vim.cmd("15split | term lua %")
+        cmd = "lua %"
+    elseif ft == "javascript" then
+        cmd = "node %"
+    elseif ft == "c" then
+        cmd = "gcc % -o /tmp/c_out && /tmp/c_out"
+    elseif ft == "cpp" then
+        cmd = "g++ % -o /tmp/cpp_out && /tmp/cpp_out"
     else
-        print("No runner configured for this filetype.")
+        print("No runner configured for filetype: " .. ft)
         return
     end
     
-    -- Make the new terminal invisible to the tab bar and Telescope
+    vim.cmd("15split | term " .. cmd)
     vim.cmd("setlocal nobuflisted")
 end, { desc = "Run Current File" })
+
+-- Add a universal format keybind for languages other than Python
+keymap("n", "<leader>fm", function() vim.lsp.buf.format({ async = true }) end, { desc = "Format Document" })
 
 -- Easily exit terminal mode with Escape (instead of the default Ctrl+\ Ctrl+n)
 keymap("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
@@ -99,7 +109,10 @@ require("lazy").setup({
         build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = { "python", "lua", "bash", "markdown" },
+                ensure_installed = { 
+                    "python", "lua", "bash", "markdown", "markdown_inline",
+                    "c", "cpp", "javascript", "html", "css", "json", "sql", "yaml" 
+                },
                 highlight = { enable = true },
                 indent = { enable = true },
             })
@@ -167,53 +180,47 @@ require("lazy").setup({
             -- 4a. Setup Mason to install language servers
             require("mason").setup()
             require("mason-lspconfig").setup({
-                ensure_installed = { "pyright", "lua_ls", "bashls", "ruff" },
+                ensure_installed = { 
+                    "pyright", "lua_ls", "bashls", "ruff",
+                    "clangd",     -- C/C++
+                    "ts_ls",      -- JavaScript / TypeScript
+                    "html",       -- HTML
+                    "cssls",      -- CSS
+                    "jsonls",     -- JSON
+                    "marksman",   -- Markdown
+                    "sqlls"       -- SQL
+                },
             })
 
             -- 4b. Setup Keybindings for LSP features
-            vim.api.nvim_create_autocmd("LspAttach", {
-                callback = function(event)
-                    local opts = { buffer = event.buf }
-                    vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Go to Definition" }))
-                    vim.keymap.set("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover Documentation" }))
-                    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename Variable" }))
-                    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code Action" }))
-                end,
-            })
+            -- ... [Keep your existing 4b block exactly as it is] ...
 
-            -- 4c. Setup the Language Servers
             -- 4c. Setup the Language Servers (Neovim 0.11+ Native API)
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-            -- Pyright
+            -- Python (Pyright & Ruff)
             vim.lsp.config("pyright", { 
                 capabilities = capabilities,
-                settings = {
-                    python = {
-                        pythonPath = vim.fn.exepath("python")
-                    }
-                }
+                settings = { python = { pythonPath = vim.fn.exepath("python") } }
             })
             vim.lsp.enable("pyright")
-
-            -- Ruff
+            
             vim.lsp.config("ruff", { capabilities = capabilities })
             vim.lsp.enable("ruff")
 
-            -- Bashls
-            vim.lsp.config("bashls", { capabilities = capabilities })
-            vim.lsp.enable("bashls")
-
-            -- Lua_ls
+            -- Lua
             vim.lsp.config("lua_ls", {
                 capabilities = capabilities,
-                settings = {
-                    Lua = {
-                        diagnostics = { globals = { "vim" } },
-                    },
-                },
+                settings = { Lua = { diagnostics = { globals = { "vim" } } } },
             })
             vim.lsp.enable("lua_ls")
+
+            -- General Servers (No special settings required)
+            local servers = { "bashls", "clangd", "ts_ls", "html", "cssls", "jsonls", "marksman", "sqlls" }
+            for _, lsp in ipairs(servers) do
+                vim.lsp.config(lsp, { capabilities = capabilities })
+                vim.lsp.enable(lsp)
+            end
 
             -- 4d. Setup Autocompletion UI and behavior
             local cmp = require("cmp")
@@ -232,8 +239,13 @@ require("lazy").setup({
                 sources = cmp.config.sources({
                     { name = "nvim_lsp" },
                     { name = "luasnip" },
+                    { name = "buffer" },
+                    { name = "path" }
                 }),
             })
+            -- Automatically add parentheses after selecting a function or method
+            local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+            cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
         end,
     },
     
@@ -261,6 +273,60 @@ require("lazy").setup({
             })
         end,
     },
+
+    -- Auto-close brackets and quotes
+    {
+        "windwp/nvim-autopairs",
+        event = "InsertEnter",
+        config = function()
+            require("nvim-autopairs").setup({
+                check_ts = true, -- Use treesitter to check if a pair should be auto-closed
+            })
+        end,
+    },
+
+    -- Cloud-Based Open Source AI (CodeCompanion + OpenRouter)
+    {
+        "olimorris/codecompanion.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-treesitter/nvim-treesitter",
+        },
+        config = function()
+            require("codecompanion").setup({
+                strategies = {
+                    chat = { adapter = "openrouter" },
+                    inline = { adapter = "openrouter" },
+                },
+                adapters = {
+                    openrouter = function()
+                        return require("codecompanion.adapters").extend("openai_compatible", {
+                            env = {
+                                url = "https://openrouter.ai/api",
+                                api_key = "OPENROUTER_API_KEY",
+                                chat_url = "/v1/chat/completions",
+                            },
+                            name = "OpenRouter",
+                            schema = {
+                                model = {
+                                    default = "qwen/qwen-2.5-coder-32b-instruct:free",
+                                },
+                                -- Add this block to limit the token request
+                                max_tokens = {
+                                    default = 8000,
+                                },
+                            },
+                        })
+                    end,
+                },
+            })
+        end,
+        keys = {
+            { "<leader>ai", "<cmd>CodeCompanionActions<CR>", desc = "AI Actions Menu" },
+            { "<leader>ac", "<cmd>CodeCompanionChat Toggle<CR>", desc = "Toggle AI Chat Window" },
+            { "<leader>ae", "<cmd>CodeCompanionChat Add<CR>", mode = "v", desc = "Explain/Refactor Selection" },
+        },
+    },
 })
 
 -- 5. AUTO-COMMANDS
@@ -278,3 +344,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
         vim.lsp.buf.format({ async = false })
     end,
 })
+
+
+
+
