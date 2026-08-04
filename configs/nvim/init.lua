@@ -28,6 +28,26 @@ keymap("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show Error/Warning
 -- Delete text without copying it to the clipboard
 keymap({"n", "v"}, "<leader>d", "\"_d", { desc = "Delete without copying" })
 keymap({"n", "v"}, "<leader>x", "\"_x", { desc = "Delete character without copying" })
+-- Execute the current file based on its language
+keymap("n", "<leader>r", function()
+    local ft = vim.bo.filetype
+    vim.cmd("write") -- Auto-save before running
+    
+    if ft == "python" then
+        vim.cmd("15split | term python %")
+    elseif ft == "sh" then
+        vim.cmd("15split | term bash %")
+    elseif ft == "lua" then
+        vim.cmd("15split | term lua %")
+    else
+        print("No runner configured for this filetype.")
+    end
+end, { desc = "Run Current File" })
+
+-- Easily exit terminal mode with Escape (instead of the default Ctrl+\ Ctrl+n)
+keymap("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
+-- Open a built-in terminal at the bottom of the screen
+keymap("n", "<leader>t", "<cmd>15split | term<CR>", { desc = "Open Terminal Split" })
 
 -- Better window navigation (Ctrl + hjkl)
 keymap("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
