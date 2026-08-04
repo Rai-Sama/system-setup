@@ -293,27 +293,39 @@ require("lazy").setup({
             "nvim-treesitter/nvim-treesitter",
         },
         config = function()
+            -- 1. Read your perfect key file and inject it directly into Neovim's OS environment
+            local key_file = io.open(vim.fn.expand("~/.config/gemini.key"), "r")
+            if key_file then
+                vim.env.GEMINI_API_KEY = key_file:read("*a"):gsub("%s+", "")
+                key_file:close()
+            end
+
             require("codecompanion").setup({
                 strategies = {
-                    chat = { adapter = "openrouter" },
-                    inline = { adapter = "openrouter" },
+                    -- Keep Gemini as your default AI
+                    chat = { adapter = "gemini" },
+                    inline = { adapter = "gemini" },
                 },
                 adapters = {
-                    openrouter = function()
-                        return require("codecompanion.adapters").extend("openai_compatible", {
-                            env = {
-                                url = "https://openrouter.ai/api",
-                                api_key = "OPENROUTER_API_KEY",
-                                chat_url = "/v1/chat/completions",
-                            },
-                            name = "OpenRouter",
+                    http = {
+                        gemini = function()
+                            return require("codecompanion.adapters").extend("gemini", {
+                                schema = {
+                                    model = {
+                                        default = "gemini-3.6-flash",
+                                    },
+                                },
+                            })
+                        end,
+                    },
+                    -- Add Ollama as your offline/rate-limit fallback
+                    ollama = function()
+                        return require("codecompanion.adapters").extend("ollama", {
+                            name = "ollama",
                             schema = {
                                 model = {
-                                    default = "qwen/qwen-2.5-coder-32b-instruct:free",
-                                },
-                                -- Add this block to limit the token request
-                                max_tokens = {
-                                    default = 8000,
+                                    -- Qwen 2.5 Coder 7B is highly recommended for laptops
+                                    default = "qwen2.5-coder:7b",
                                 },
                             },
                         })
@@ -344,7 +356,3 @@ vim.api.nvim_create_autocmd("BufWritePre", {
         vim.lsp.buf.format({ async = false })
     end,
 })
-
-
-
-
