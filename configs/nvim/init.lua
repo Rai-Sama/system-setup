@@ -24,6 +24,10 @@ local keymap = vim.keymap.set
 keymap("n", "<leader>w", "<cmd>w<CR>", { desc = "Save File" })
 keymap("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit Neovim" })
 keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear Search Highlights" })
+keymap("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show Error/Warning Message" })
+-- Delete text without copying it to the clipboard
+keymap({"n", "v"}, "<leader>d", "\"_d", { desc = "Delete without copying" })
+keymap({"n", "v"}, "<leader>x", "\"_x", { desc = "Delete character without copying" })
 
 -- Better window navigation (Ctrl + hjkl)
 keymap("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
@@ -78,6 +82,42 @@ require("lazy").setup({
         },
     },
 
+    -- Git Visuals (Gitsigns)
+    {
+        "lewis6991/gitsigns.nvim",
+        config = function()
+            require("gitsigns").setup({
+                -- Clean vertical bars for added/changed lines
+                signs = {
+                    add          = { text = '┃' },
+                    change       = { text = '┃' },
+                    delete       = { text = '_' },
+                    topdelete    = { text = '‾' },
+                    changedelete = { text = '~' },
+                },
+                -- Set up keybindings only for files tracked by Git
+                on_attach = function(bufnr)
+                    local gs = package.loaded.gitsigns
+
+                    local function map(mode, l, r, opts)
+                        opts = opts or {}
+                        opts.buffer = bufnr
+                        vim.keymap.set(mode, l, r, opts)
+                    end
+
+                    -- Jump between changed chunks (hunks) of code
+                    map('n', ']c', gs.next_hunk, { desc = "Next Git Hunk" })
+                    map('n', '[c', gs.prev_hunk, { desc = "Previous Git Hunk" })
+
+                    -- Quality of Life Actions
+                    map('n', '<leader>gp', gs.preview_hunk, { desc = "Preview Git Hunk (Diff)" })
+                    map('n', '<leader>gr', gs.reset_hunk, { desc = "Reset/Revert Git Hunk" })
+                    map('n', '<leader>gb', function() gs.blame_line{full=true} end, { desc = "Git Blame (Current Line)" })
+                end
+            })
+        end
+    },
+
     -- IntelliSense (LSP and Autocompletion)
     {
         "neovim/nvim-lspconfig",
@@ -107,13 +147,30 @@ require("lazy").setup({
             })
 
             -- 4c. Setup the Language Servers
-            local lspconfig = require("lspconfig")
+            -- 4c. Setup the Language Servers (Neovim 0.11+ Native API)
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-            lspconfig.pyright.setup({ capabilities = capabilities })
-            lspconfig.ruff.setup({ capabilities = capabilities })
-            lspconfig.bashls.setup({ capabilities = capabilities })
-            lspconfig.lua_ls.setup({
+            -- Pyright
+            vim.lsp.config("pyright", { 
+                capabilities = capabilities,
+                settings = {
+                    python = {
+                        pythonPath = vim.fn.exepath("python")
+                    }
+                }
+            })
+            vim.lsp.enable("pyright")
+
+            -- Ruff
+            vim.lsp.config("ruff", { capabilities = capabilities })
+            vim.lsp.enable("ruff")
+
+            -- Bashls
+            vim.lsp.config("bashls", { capabilities = capabilities })
+            vim.lsp.enable("bashls")
+
+            -- Lua_ls
+            vim.lsp.config("lua_ls", {
                 capabilities = capabilities,
                 settings = {
                     Lua = {
@@ -121,6 +178,7 @@ require("lazy").setup({
                     },
                 },
             })
+            vim.lsp.enable("lua_ls")
 
             -- 4d. Setup Autocompletion UI and behavior
             local cmp = require("cmp")
@@ -146,10 +204,17 @@ require("lazy").setup({
 })
 
 -- 5. AUTO-COMMANDS
--- Automatically format Python files on save using the active LSP (Ruff)
+-- Automatically format and organize imports for Python files on save using Ruff
 vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*.py",
     callback = function()
+        -- 1. Tell Ruff to silently organize imports
+        vim.lsp.buf.code_action({
+            context = { only = { "source.organizeImports" } },
+            apply = true,
+        })
+        
+        -- 2. Format the rest of the code
         vim.lsp.buf.format({ async = false })
     end,
 })

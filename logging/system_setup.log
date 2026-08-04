@@ -272,3 +272,8 @@ Installed via pip: dlib face_recognition scikit-learn numpy
 # Date: Monday 06 July 2026 11:45:59 PM IST
 
 Installed via pip: pyright
+
+# Installing python3-venv since it is needed for installing ruff in neovim (APT)
+# Date: Tuesday 04 August 2026 10:01:46 PM IST
+
+Installed via apt: python3-venv
