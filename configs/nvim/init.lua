@@ -18,6 +18,8 @@ vim.opt.clipboard = "unnamedplus"  -- Sync with Linux system clipboard
 vim.opt.undofile = true            -- Maintain undo history between sessions
 vim.opt.splitbelow = true          -- Horizontal splits open below
 vim.opt.splitright = true          -- Vertical splits open to the right
+vim.opt.timeout = true
+vim.opt.timeoutlen = 300   -- Decrease time to wait for a mapped sequence
 
 -- 2. BASIC KEYMAPS
 local keymap = vim.keymap.set
@@ -25,9 +27,11 @@ keymap("n", "<leader>w", "<cmd>w<CR>", { desc = "Save File" })
 keymap("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit Neovim" })
 keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear Search Highlights" })
 keymap("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show Error/Warning Message" })
+
 -- Delete text without copying it to the clipboard
 keymap({"n", "v"}, "<leader>d", "\"_d", { desc = "Delete without copying" })
 keymap({"n", "v"}, "<leader>x", "\"_x", { desc = "Delete character without copying" })
+
 -- Execute the current file based on its language
 keymap("n", "<leader>r", function()
     local ft = vim.bo.filetype
@@ -41,11 +45,16 @@ keymap("n", "<leader>r", function()
         vim.cmd("15split | term lua %")
     else
         print("No runner configured for this filetype.")
+        return
     end
+    
+    -- Make the new terminal invisible to the tab bar and Telescope
+    vim.cmd("setlocal nobuflisted")
 end, { desc = "Run Current File" })
 
 -- Easily exit terminal mode with Escape (instead of the default Ctrl+\ Ctrl+n)
 keymap("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
+
 -- Open a built-in terminal at the bottom of the screen
 keymap("n", "<leader>t", "<cmd>15split | term<CR>", { desc = "Open Terminal Split" })
 
@@ -54,6 +63,11 @@ keymap("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
 keymap("n", "<C-j>", "<C-w>j", { desc = "Move to lower split" })
 keymap("n", "<C-k>", "<C-w>k", { desc = "Move to upper split" })
 keymap("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
+
+-- Buffer Navigation
+keymap("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next Buffer" })       -- Shift + L
+keymap("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous Buffer" })   -- Shift + H
+keymap("n", "<leader>c", "<cmd>bdelete<CR>", { desc = "Close current buffer" }) -- Space + c
 
 -- 3. BOOTSTRAP PLUGIN MANAGER (lazy.nvim)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -99,6 +113,7 @@ require("lazy").setup({
         keys = {
             { "<leader>ff", "<cmd>Telescope find_files<CR>", desc = "Find Files" },
             { "<leader>fg", "<cmd>Telescope live_grep<CR>", desc = "Live Grep (Search Text)" },
+            { "<leader><space>", "<cmd>Telescope buffers<CR>", desc = "Find Open Buffers" },
         },
     },
 
@@ -218,6 +233,31 @@ require("lazy").setup({
                     { name = "nvim_lsp" },
                     { name = "luasnip" },
                 }),
+            })
+        end,
+    },
+    
+    -- Keybinding Popup Menu
+    {
+        "folke/which-key.nvim",
+        event = "VeryLazy",
+        opts = {
+            -- Leave empty to use the excellent default settings
+        },
+    },
+
+    -- Visual Tab Bar (Bufferline)
+    {
+        "akinsho/bufferline.nvim",
+        version = "*",
+        dependencies = "nvim-tree/nvim-web-devicons", -- Requires your Nerd Font
+        config = function()
+            require("bufferline").setup({
+                options = {
+                    diagnostics = "nvim_lsp", -- Shows error icons right in the tab!
+                    show_buffer_close_icons = true,
+                    show_close_icon = false,
+                }
             })
         end,
     },
