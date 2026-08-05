@@ -19,6 +19,7 @@ vim.opt.splitbelow = true          -- Horizontal splits open below
 vim.opt.splitright = true          -- Vertical splits open to the right
 vim.opt.timeout = true
 vim.opt.timeoutlen = 300           -- Decrease time to wait for a mapped sequence
+vim.opt.mouse = "a"                -- Enable mouse support (lets you drag split borders!)
 
 -- 2. BASIC KEYMAPS
 local keymap = vim.keymap.set
