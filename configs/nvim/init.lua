@@ -1,6 +1,5 @@
 -- ==========================================================================
 -- NEOVIM MINIMAL CONFIGURATION
--- Focused on Python, Lua, and Bash
 -- ==========================================================================
 
 -- 1. CORE OPTIONS
@@ -54,7 +53,6 @@ keymap("n", "<leader>r", function()
         print("No runner configured for filetype: " .. ft)
         return
     end
-    
     vim.cmd("15split | term " .. cmd)
     vim.cmd("setlocal nobuflisted")
 end, { desc = "Run Current File" })
@@ -109,9 +107,9 @@ require("lazy").setup({
         build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = { 
+                ensure_installed = {
                     "python", "lua", "bash", "markdown", "markdown_inline",
-                    "c", "cpp", "javascript", "html", "css", "json", "sql", "yaml" 
+                    "c", "cpp", "javascript", "html", "css", "json", "sql", "yaml"
                 },
                 highlight = { enable = true },
                 indent = { enable = true },
@@ -180,7 +178,7 @@ require("lazy").setup({
             -- 4a. Setup Mason to install language servers
             require("mason").setup()
             require("mason-lspconfig").setup({
-                ensure_installed = { 
+                ensure_installed = {
                     "pyright", "lua_ls", "bashls", "ruff",
                     "clangd",     -- C/C++
                     "ts_ls",      -- JavaScript / TypeScript
@@ -199,12 +197,11 @@ require("lazy").setup({
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
             -- Python (Pyright & Ruff)
-            vim.lsp.config("pyright", { 
+            vim.lsp.config("pyright", {
                 capabilities = capabilities,
                 settings = { python = { pythonPath = vim.fn.exepath("python") } }
             })
             vim.lsp.enable("pyright")
-            
             vim.lsp.config("ruff", { capabilities = capabilities })
             vim.lsp.enable("ruff")
 
@@ -307,6 +304,7 @@ require("lazy").setup({
                     inline = { adapter = "gemini" },
                 },
                 adapters = {
+                    -- BOTH network adapters must live inside the http table
                     http = {
                         gemini = function()
                             return require("codecompanion.adapters").extend("gemini", {
@@ -317,19 +315,17 @@ require("lazy").setup({
                                 },
                             })
                         end,
-                    },
-                    -- Add Ollama as your offline/rate-limit fallback
-                    ollama = function()
-                        return require("codecompanion.adapters").extend("ollama", {
-                            name = "ollama",
-                            schema = {
-                                model = {
-                                    -- Qwen 2.5 Coder 7B is highly recommended for laptops
-                                    default = "qwen2.5-coder:7b",
+                        ollama = function()
+                            return require("codecompanion.adapters").extend("ollama", {
+                                name = "ollama",
+                                schema = {
+                                    model = {
+                                        default = "qwen2.5-coder:7b",
+                                    },
                                 },
-                            },
-                        })
-                    end,
+                            })
+                        end,
+                    },
                 },
             })
         end,
@@ -339,7 +335,7 @@ require("lazy").setup({
             { "<leader>ae", "<cmd>CodeCompanionChat Add<CR>", mode = "v", desc = "Explain/Refactor Selection" },
         },
     },
-})
+   })
 
 -- 5. AUTO-COMMANDS
 -- Automatically format and organize imports for Python files on save using Ruff
@@ -351,7 +347,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
             context = { only = { "source.organizeImports" } },
             apply = true,
         })
-        
         -- 2. Format the rest of the code
         vim.lsp.buf.format({ async = false })
     end,
