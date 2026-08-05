@@ -182,6 +182,37 @@ require("lazy").setup({
         },
     },
 
+    -- Markdown Rendering
+    {
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {},
+        dependencies = { 
+            "nvim-treesitter/nvim-treesitter", 
+            "nvim-tree/nvim-web-devicons" 
+        },
+    },
+
+    -- Inline Image Rendering (Works beautifully with Kitty)
+    {
+        "3rd/image.nvim",
+        opts = {
+            backend = "kitty",
+            processor = "magick_cli", -- Uses system ImageMagick, avoids heavy Lua compilers
+            integrations = {
+                markdown = {
+                    enabled = true,
+                    clear_in_insert_mode = false,
+                    download_remote_images = true, -- Crucial: Downloads LeetCode's web URLs!
+                    only_render_image_at_cursor = false,
+                    filetypes = { "markdown" },
+                },
+            },
+            max_width = nil,
+            max_height = nil,
+            max_width_window_percentage = 80, -- Prevents massive graphs from taking over
+        },
+    },
+
     -- Git Visuals (Gitsigns)
     {
         "lewis6991/gitsigns.nvim",
@@ -389,6 +420,7 @@ require("lazy").setup({
             { "<leader>ae", "<cmd>CodeCompanionChat Add<CR>", mode = "v", desc = "AI Edit/Explain Selection" },
         },
     },
+
 })
 
 -- 5. AUTO-COMMANDS

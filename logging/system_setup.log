@@ -282,3 +282,8 @@ Installed via apt: python3-venv
 # Date: Wednesday 05 August 2026 04:34:17 PM IST
 
 Installed ollama and qwen 2.5 coder 7b model for using as the AI assistant in nvim when gemini reaches its token limit
+
+# Installing readline development package since rendering images in markdowns in nvim depends on it (APT)
+# Date: Wednesday 05 August 2026 05:46:36 PM IST
+
+Installed via apt: libreadline-dev
