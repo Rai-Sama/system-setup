@@ -424,20 +424,17 @@ require("lazy").setup({
 })
 
 -- 5. AUTO-COMMANDS
--- Python format & import organization (Strictly filtered to Ruff)
+-- Python: Only organize imports on save (Do NOT aggressively format/wrap lines)
 vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*.py",
     callback = function()
+        -- Only organize imports silently
         vim.lsp.buf.code_action({
             context = { only = { "source.organizeImports" } },
             apply = true,
         })
         
-        vim.lsp.buf.format({ 
-            async = false,
-            filter = function(client)
-                return client.name == "ruff"
-            end,
-        })
+        -- Note: vim.lsp.buf.format() has been intentionally removed from here 
+        -- to prevent Ruff from breaking long lines and function definitions.
     end,
 })
