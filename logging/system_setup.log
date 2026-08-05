@@ -277,3 +277,8 @@ Installed via pip: pyright
 # Date: Tuesday 04 August 2026 10:01:46 PM IST
 
 Installed via apt: python3-venv
+
+# Manual Note
+# Date: Wednesday 05 August 2026 04:34:17 PM IST
+
+Installed ollama and qwen 2.5 coder 7b model for using as the AI assistant in nvim when gemini reaches its token limit

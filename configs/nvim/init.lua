@@ -259,9 +259,8 @@ require("lazy").setup({
             -- 4c. Language Servers Configuration
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-            vim.lsp.config("pyright", { 
+            vim.lsp.config("pyright", {
                 capabilities = capabilities,
-                settings = { python = { pythonPath = vim.fn.exepath("python3") } }
             })
             vim.lsp.enable("pyright")
             

@@ -15,6 +15,9 @@ alias logflat='logpkg flatpak'
 alias jl='cd ~/everything/learning/notebooks && conda activate py313 && jupyter lab'
 alias mm='cd ~/everything/learning/notebooks && conda activate py313 && marimo edit'
 alias refresh='source ~/everything/system/custom_scripts/zsh/.zshrc'
+# Media archive personal project shortcuts
 alias media-sync='cd ~/everything/projects/media-archiver && conda activate py313 && python organize.py'
 alias media-find='cd ~/everything/projects/media-archiver && conda activate py313 && python search.py'
 alias media-view='cd ~/everything/projects/media-archiver && conda activate py313 && python viewer.py'
+# Leetcode workflow shortcuts
+alias lc="cd ~/everything/learning/dsa/leetcode_sols && leetgo pick"
