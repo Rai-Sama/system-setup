@@ -18,27 +18,30 @@ vim.opt.undofile = true            -- Maintain undo history between sessions
 vim.opt.splitbelow = true          -- Horizontal splits open below
 vim.opt.splitright = true          -- Vertical splits open to the right
 vim.opt.timeout = true
-vim.opt.timeoutlen = 300   -- Decrease time to wait for a mapped sequence
+vim.opt.timeoutlen = 300           -- Decrease time to wait for a mapped sequence
 
 -- 2. BASIC KEYMAPS
 local keymap = vim.keymap.set
 keymap("n", "<leader>w", "<cmd>w<CR>", { desc = "Save File" })
 keymap("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit Neovim" })
-keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear Search Highlights" })
-keymap("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show Error/Warning Message" })
+keymap("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear Highlights" })
+
+-- Diagnostic Float keymap
+keymap("n", "gl", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+keymap("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Code Diagnostics" })
 
 -- Delete text without copying it to the clipboard
-keymap({"n", "v"}, "<leader>d", "\"_d", { desc = "Delete without copying" })
-keymap({"n", "v"}, "<leader>x", "\"_x", { desc = "Delete character without copying" })
+keymap({"n", "v"}, "<leader>d", "\"_d", { desc = "Delete (No Copy)" })
+keymap({"n", "v"}, "<leader>x", "\"_x", { desc = "Delete Char (No Copy)" })
 
--- Execute the current file based on its language
+-- Execute current file (Reuses ONLY the code runner terminal)
 keymap("n", "<leader>r", function()
     local ft = vim.bo.filetype
     vim.cmd("write") -- Auto-save before running
     
     local cmd = ""
     if ft == "python" then
-        cmd = "python %"
+        cmd = "python3 %"
     elseif ft == "sh" then
         cmd = "bash %"
     elseif ft == "lua" then
@@ -53,29 +56,66 @@ keymap("n", "<leader>r", function()
         print("No runner configured for filetype: " .. ft)
         return
     end
+
+    -- Close ONLY the previous runner terminal, ignore background servers
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.b[buf].is_code_runner then
+            vim.api.nvim_buf_delete(buf, { force = true })
+        end
+    end
+    
     vim.cmd("15split | term " .. cmd)
     vim.cmd("setlocal nobuflisted")
-end, { desc = "Run Current File" })
+    vim.b.is_code_runner = true -- Tag this specific buffer as the runner
+end, { desc = "Run Code File" })
 
--- Add a universal format keybind for languages other than Python
-keymap("n", "<leader>fm", function() vim.lsp.buf.format({ async = true }) end, { desc = "Format Document" })
+-- Format keybind moved to the "Code" group
+keymap("n", "<leader>cf", function() vim.lsp.buf.format({ async = true }) end, { desc = "Code Format" })
 
--- Easily exit terminal mode with Escape (instead of the default Ctrl+\ Ctrl+n)
+-- Terminal Mode & Window Controls
 keymap("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
 
--- Open a built-in terminal at the bottom of the screen
-keymap("n", "<leader>t", "<cmd>15split | term<CR>", { desc = "Open Terminal Split" })
+-- Toggle a persistent General Terminal (Prevents stacking)
+keymap("n", "<leader>t", function()
+    local term_buf = nil
+    -- Find if our general terminal buffer already exists
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.b[buf].is_general_term then
+            term_buf = buf
+            break
+        end
+    end
 
--- Better window navigation (Ctrl + hjkl)
-keymap("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
-keymap("n", "<C-j>", "<C-w>j", { desc = "Move to lower split" })
-keymap("n", "<C-k>", "<C-w>k", { desc = "Move to upper split" })
-keymap("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
+    if term_buf then
+        -- Check if it is currently visible in a window
+        local term_win = vim.fn.bufwinnr(term_buf)
+        if term_win ~= -1 then
+            vim.cmd(term_win .. "wincmd c") -- It's open, so close the split
+        else
+            -- It's hidden, so open a split and load the buffer
+            vim.cmd("15split")
+            vim.cmd("buffer " .. term_buf)
+            vim.cmd("startinsert")
+        end
+    else
+        -- It doesn't exist yet, so create it
+        vim.cmd("15split | term")
+        vim.cmd("setlocal nobuflisted")
+        vim.b.is_general_term = true -- Tag this buffer as the general terminal
+        vim.cmd("startinsert")
+    end
+end, { desc = "Toggle Terminal" })
 
--- Buffer Navigation
-keymap("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next Buffer" })       -- Shift + L
-keymap("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous Buffer" })   -- Shift + H
-keymap("n", "<leader>c", "<cmd>bdelete<CR>", { desc = "Close current buffer" }) -- Space + c
+-- Window navigation (Ctrl + hjkl)
+keymap("n", "<C-h>", "<C-w>h", { desc = "Window Left" })
+keymap("n", "<C-j>", "<C-w>j", { desc = "Window Down" })
+keymap("n", "<C-k>", "<C-w>k", { desc = "Window Up" })
+keymap("n", "<C-l>", "<C-w>l", { desc = "Window Right" })
+
+-- Buffer Navigation (Close buffer moved to bd)
+keymap("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next Buffer" })
+keymap("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous Buffer" })
+keymap("n", "<leader>bd", "<cmd>bdelete<CR>", { desc = "Close Buffer" })
 
 -- 3. BOOTSTRAP PLUGIN MANAGER (lazy.nvim)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -101,15 +141,29 @@ require("lazy").setup({
         end,
     },
 
+    -- File Explorer (NvimTree)
+    {
+        "nvim-tree/nvim-tree.lua",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        config = function()
+            require("nvim-tree").setup({
+                view = { width = 30 },
+                renderer = { group_empty = true },
+                filters = { dotfiles = false },
+            })
+            vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle Explorer" })
+        end,
+    },
+
     -- Syntax Highlighting
     {
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = {
+                ensure_installed = { 
                     "python", "lua", "bash", "markdown", "markdown_inline",
-                    "c", "cpp", "javascript", "html", "css", "json", "sql", "yaml"
+                    "c", "cpp", "cmake", "javascript", "html", "css", "json", "sql", "yaml" 
                 },
                 highlight = { enable = true },
                 indent = { enable = true },
@@ -122,9 +176,9 @@ require("lazy").setup({
         "nvim-telescope/telescope.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
         keys = {
-            { "<leader>ff", "<cmd>Telescope find_files<CR>", desc = "Find Files" },
-            { "<leader>fg", "<cmd>Telescope live_grep<CR>", desc = "Live Grep (Search Text)" },
-            { "<leader><space>", "<cmd>Telescope buffers<CR>", desc = "Find Open Buffers" },
+            { "<leader>ff", "<cmd>Telescope find_files<CR>", desc = "Search Files" },
+            { "<leader>fg", "<cmd>Telescope live_grep<CR>", desc = "Search Text" },
+            { "<leader><space>", "<cmd>Telescope buffers<CR>", desc = "Search Buffers" },
         },
     },
 
@@ -133,7 +187,6 @@ require("lazy").setup({
         "lewis6991/gitsigns.nvim",
         config = function()
             require("gitsigns").setup({
-                -- Clean vertical bars for added/changed lines
                 signs = {
                     add          = { text = '┃' },
                     change       = { text = '┃' },
@@ -141,85 +194,95 @@ require("lazy").setup({
                     topdelete    = { text = '‾' },
                     changedelete = { text = '~' },
                 },
-                -- Set up keybindings only for files tracked by Git
                 on_attach = function(bufnr)
                     local gs = package.loaded.gitsigns
-
                     local function map(mode, l, r, opts)
                         opts = opts or {}
                         opts.buffer = bufnr
                         vim.keymap.set(mode, l, r, opts)
                     end
 
-                    -- Jump between changed chunks (hunks) of code
                     map('n', ']c', gs.next_hunk, { desc = "Next Git Hunk" })
                     map('n', '[c', gs.prev_hunk, { desc = "Previous Git Hunk" })
-
-                    -- Quality of Life Actions
-                    map('n', '<leader>gp', gs.preview_hunk, { desc = "Preview Git Hunk (Diff)" })
-                    map('n', '<leader>gr', gs.reset_hunk, { desc = "Reset/Revert Git Hunk" })
-                    map('n', '<leader>gb', function() gs.blame_line{full=true} end, { desc = "Git Blame (Current Line)" })
+                    map('n', '<leader>gp', gs.preview_hunk, { desc = "Preview Hunk" })
+                    map('n', '<leader>gr', gs.reset_hunk, { desc = "Reset Hunk" })
+                    map('n', '<leader>gb', function() gs.blame_line{full=true} end, { desc = "Git Blame" })
                 end
             })
         end
     },
 
-    -- IntelliSense (LSP and Autocompletion)
+    -- IntelliSense (LSP, Autocompletion, and Autopairs)
     {
         "neovim/nvim-lspconfig",
         dependencies = {
-            "williamboman/mason.nvim",           -- Installs language servers seamlessly
-            "williamboman/mason-lspconfig.nvim", -- Bridges mason with lspconfig
-            "hrsh7th/nvim-cmp",                  -- Autocompletion engine
-            "hrsh7th/cmp-nvim-lsp",              -- LSP source for cmp
-            "L3MON4D3/LuaSnip",                  -- Snippet engine
+            "williamboman/mason.nvim",
+            "williamboman/mason-lspconfig.nvim",
+            "hrsh7th/nvim-cmp",
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "L3MON4D3/LuaSnip",
+            "windwp/nvim-autopairs", 
         },
         config = function()
-            -- 4a. Setup Mason to install language servers
+            -- 4a. Setup Mason
             require("mason").setup()
             require("mason-lspconfig").setup({
-                ensure_installed = {
+                ensure_installed = { 
                     "pyright", "lua_ls", "bashls", "ruff",
-                    "clangd",     -- C/C++
-                    "ts_ls",      -- JavaScript / TypeScript
-                    "html",       -- HTML
-                    "cssls",      -- CSS
-                    "jsonls",     -- JSON
-                    "marksman",   -- Markdown
-                    "sqlls"       -- SQL
+                    "clangd", "ts_ls", "html", "cssls", "jsonls", "marksman", "sqlls" 
                 },
             })
 
-            -- 4b. Setup Keybindings for LSP features
-            -- ... [Keep your existing 4b block exactly as it is] ...
+            -- 4b. Restored LSP Keybindings (LspAttach)
+            vim.api.nvim_create_autocmd("LspAttach", {
+                group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+                callback = function(ev)
+                    local opts = { buffer = ev.buf }
+                    local map = function(mode, lhs, rhs, desc)
+                        vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { desc = desc }))
+                    end
 
-            -- 4c. Setup the Language Servers (Neovim 0.11+ Native API)
+                    map("n", "gd", vim.lsp.buf.definition, "Go to Definition")
+                    map("n", "gD", vim.lsp.buf.declaration, "Go to Declaration")
+                    map("n", "gr", vim.lsp.buf.references, "Go to References")
+                    map("n", "gi", vim.lsp.buf.implementation, "Go to Implementation")
+                    map("n", "K", vim.lsp.buf.hover, "Hover Docs")
+                    map("n", "<leader>ca", vim.lsp.buf.code_action, "Code Action")
+                    map("n", "<leader>cr", vim.lsp.buf.rename, "Code Rename") -- Moved to cr to prevent conflict
+                    map("n", "[d", vim.diagnostic.goto_prev, "Prev Diagnostic")
+                    map("n", "]d", vim.diagnostic.goto_next, "Next Diagnostic")
+                end,
+            })
+
+            -- 4c. Language Servers Configuration
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-            -- Python (Pyright & Ruff)
-            vim.lsp.config("pyright", {
+            vim.lsp.config("pyright", { 
                 capabilities = capabilities,
-                settings = { python = { pythonPath = vim.fn.exepath("python") } }
+                settings = { python = { pythonPath = vim.fn.exepath("python3") } }
             })
             vim.lsp.enable("pyright")
+            
             vim.lsp.config("ruff", { capabilities = capabilities })
             vim.lsp.enable("ruff")
 
-            -- Lua
             vim.lsp.config("lua_ls", {
                 capabilities = capabilities,
                 settings = { Lua = { diagnostics = { globals = { "vim" } } } },
             })
             vim.lsp.enable("lua_ls")
 
-            -- General Servers (No special settings required)
             local servers = { "bashls", "clangd", "ts_ls", "html", "cssls", "jsonls", "marksman", "sqlls" }
             for _, lsp in ipairs(servers) do
                 vim.lsp.config(lsp, { capabilities = capabilities })
                 vim.lsp.enable(lsp)
             end
 
-            -- 4d. Setup Autocompletion UI and behavior
+            -- 4d. Setup Autopairs & Completion
+            require("nvim-autopairs").setup({ check_ts = true })
+            
             local cmp = require("cmp")
             cmp.setup({
                 snippet = {
@@ -229,7 +292,7 @@ require("lazy").setup({
                 },
                 mapping = cmp.mapping.preset.insert({
                     ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Enter confirms selection
+                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
                     ["<Tab>"] = cmp.mapping.select_next_item(),
                     ["<S-Tab>"] = cmp.mapping.select_prev_item(),
                 }),
@@ -240,18 +303,24 @@ require("lazy").setup({
                     { name = "path" }
                 }),
             })
-            -- Automatically add parentheses after selecting a function or method
+
             local cmp_autopairs = require("nvim-autopairs.completion.cmp")
             cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
         end,
     },
     
-    -- Keybinding Popup Menu
+    -- Keybinding Popup Menu (Configured to label your prefixes cleanly)
     {
         "folke/which-key.nvim",
         event = "VeryLazy",
         opts = {
-            -- Leave empty to use the excellent default settings
+            spec = {
+                { "<leader>a", group = "AI Actions" },
+                { "<leader>b", group = "Buffer" },
+                { "<leader>c", group = "Code" },
+                { "<leader>f", group = "Find" },
+                { "<leader>g", group = "Git" },
+            },
         },
     },
 
@@ -259,11 +328,11 @@ require("lazy").setup({
     {
         "akinsho/bufferline.nvim",
         version = "*",
-        dependencies = "nvim-tree/nvim-web-devicons", -- Requires your Nerd Font
+        dependencies = "nvim-tree/nvim-web-devicons",
         config = function()
             require("bufferline").setup({
                 options = {
-                    diagnostics = "nvim_lsp", -- Shows error icons right in the tab!
+                    diagnostics = "nvim_lsp",
                     show_buffer_close_icons = true,
                     show_close_icon = false,
                 }
@@ -271,18 +340,7 @@ require("lazy").setup({
         end,
     },
 
-    -- Auto-close brackets and quotes
-    {
-        "windwp/nvim-autopairs",
-        event = "InsertEnter",
-        config = function()
-            require("nvim-autopairs").setup({
-                check_ts = true, -- Use treesitter to check if a pair should be auto-closed
-            })
-        end,
-    },
-
-    -- Cloud-Based Open Source AI (CodeCompanion + OpenRouter)
+    -- AI Assistant (CodeCompanion with Gemini + Ollama explicit keymaps)
     {
         "olimorris/codecompanion.nvim",
         dependencies = {
@@ -290,7 +348,6 @@ require("lazy").setup({
             "nvim-treesitter/nvim-treesitter",
         },
         config = function()
-            -- 1. Read your perfect key file and inject it directly into Neovim's OS environment
             local key_file = io.open(vim.fn.expand("~/.config/gemini.key"), "r")
             if key_file then
                 vim.env.GEMINI_API_KEY = key_file:read("*a"):gsub("%s+", "")
@@ -299,12 +356,10 @@ require("lazy").setup({
 
             require("codecompanion").setup({
                 strategies = {
-                    -- Keep Gemini as your default AI
                     chat = { adapter = "gemini" },
                     inline = { adapter = "gemini" },
                 },
                 adapters = {
-                    -- BOTH network adapters must live inside the http table
                     http = {
                         gemini = function()
                             return require("codecompanion.adapters").extend("gemini", {
@@ -330,24 +385,28 @@ require("lazy").setup({
             })
         end,
         keys = {
-            { "<leader>ai", "<cmd>CodeCompanionActions<CR>", desc = "AI Actions Menu" },
-            { "<leader>ac", "<cmd>CodeCompanionChat Toggle<CR>", desc = "Toggle AI Chat Window" },
-            { "<leader>ae", "<cmd>CodeCompanionChat Add<CR>", mode = "v", desc = "Explain/Refactor Selection" },
+            { "<leader>ai", "<cmd>CodeCompanionActions<CR>", desc = "AI Actions" },
+            { "<leader>ac", "<cmd>CodeCompanionChat Toggle<CR>", desc = "Toggle AI Chat" },
+            { "<leader>ae", "<cmd>CodeCompanionChat Add<CR>", mode = "v", desc = "AI Edit/Explain Selection" },
         },
     },
-   })
+})
 
 -- 5. AUTO-COMMANDS
--- Automatically format and organize imports for Python files on save using Ruff
+-- Python format & import organization (Strictly filtered to Ruff)
 vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*.py",
     callback = function()
-        -- 1. Tell Ruff to silently organize imports
         vim.lsp.buf.code_action({
             context = { only = { "source.organizeImports" } },
             apply = true,
         })
-        -- 2. Format the rest of the code
-        vim.lsp.buf.format({ async = false })
+        
+        vim.lsp.buf.format({ 
+            async = false,
+            filter = function(client)
+                return client.name == "ruff"
+            end,
+        })
     end,
 })
