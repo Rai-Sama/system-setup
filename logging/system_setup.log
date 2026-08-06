@@ -302,3 +302,28 @@ Installed via pip: llama-index-llms-gemini llama-index-embeddings-huggingface ll
 # Date: Thursday 06 August 2026 08:59:43 PM IST
 
 Installed via pip: llama-index-llms-gemini llama-index-embeddings-huggingface llama-index-embeddings-gemini
+
+# Manual Note
+# Date: Thursday 06 August 2026 09:00:58 PM IST
+
+Installed llama-index llama-cloud llama-index-vector-stores-chroma chromadb nest-asyncio in agentic_ai venv using pip
+
+# Installing python-dotenv to handle env files securely in agentic_ai venv (pip)
+# Date: Thursday 06 August 2026 09:01:38 PM IST
+
+Installed via pip: python-dotenv
+
+# Manual Note
+# Date: Thursday 06 August 2026 09:12:58 PM IST
+
+Pip uninstalled llama-index-llms-gemini google-generativeai since they are deprecated (agentic_ai venv)
+
+# Installing llama-index-llms-google-genai google-genai to agentic_ai venv (pip)
+# Date: Thursday 06 August 2026 09:13:34 PM IST
+
+Installed via pip: llama-index-llms-google-genai google-genai
+
+# Installing langgraph in agentic_ai venv (pip)
+# Date: Thursday 06 August 2026 09:37:15 PM IST
+
+Installed via pip: langgraph
