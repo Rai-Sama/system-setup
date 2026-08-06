@@ -287,3 +287,18 @@ Installed ollama and qwen 2.5 coder 7b model for using as the AI assistant in nv
 # Date: Wednesday 05 August 2026 05:46:36 PM IST
 
 Installed via apt: libreadline-dev
+
+# Installing gemini and hugging face support for llamaindex so I can use their free tiers since OpenAI is the default for llamaindex but does not have a free tier (pip)
+# Date: Thursday 06 August 2026 08:04:45 PM IST
+
+Installed via pip: install llama-index-llms-gemini llama-index-embeddings-huggingface llama-index-embeddings-gemini
+
+# Installing gemini and hugging face support for llamaindex so I can use their free tiers since OpenAI is the default for llamaindex but does not have a free tier (pip)
+# Date: Thursday 06 August 2026 08:05:14 PM IST
+
+Installed via pip: llama-index-llms-gemini llama-index-embeddings-huggingface llama-index-embeddings-gemini
+
+# Installing gemini and hugging face support for llamaindex so I can use their free tiers since OpenAI is the default for llamaindex but does not have a free tier (pip)
+# Date: Thursday 06 August 2026 08:59:43 PM IST
+
+Installed via pip: llama-index-llms-gemini llama-index-embeddings-huggingface llama-index-embeddings-gemini
