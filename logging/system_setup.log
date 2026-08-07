@@ -327,3 +327,13 @@ Installed via pip: llama-index-llms-google-genai google-genai
 # Date: Thursday 06 August 2026 09:37:15 PM IST
 
 Installed via pip: langgraph
+
+# Installing llama-index-llms-groq to use groq API as fallback if gemini gets rate limited (pip)
+# Date: Friday 07 August 2026 11:43:03 PM IST
+
+Installed via pip: llama-index-llms-groq
+
+# Installing llama-index-llms-groq to use groq API as fallback if gemini gets rate limited (pip)
+# Date: Friday 07 August 2026 11:44:10 PM IST
+
+Installed via pip: llama-index-llms-groq
