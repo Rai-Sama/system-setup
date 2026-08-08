@@ -342,3 +342,8 @@ Installed via pip: llama-index-llms-groq
 # Date: Saturday 08 August 2026 12:09:38 AM IST
 
 Installed via pip: groq
+
+# Installing chainlit to agentic_ai venv for UI development in projects (pip)
+# Date: Saturday 08 August 2026 03:35:56 PM IST
+
+Installed via pip: chainlit
