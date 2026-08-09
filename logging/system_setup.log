@@ -347,3 +347,18 @@ Installed via pip: groq
 # Date: Saturday 08 August 2026 03:35:56 PM IST
 
 Installed via pip: chainlit
+
+# Installing pymupdf to agentic_ai venv to read PDFs fast locally (pip)
+# Date: Sunday 09 August 2026 11:19:32 PM IST
+
+Installed via pip: pymupdf
+
+# Installing llama-index-readers-file to agentic_ai venv to get work with pymupdf for reading PDFs (pip)
+# Date: Sunday 09 August 2026 11:21:42 PM IST
+
+Installed via pip: llama-index-readers-file
+
+# Installing markdown weasyprint in agentic_ai venv to render and download agent outputs (pip)
+# Date: Sunday 09 August 2026 11:43:03 PM IST
+
+Installed via pip: markdown weasyprint
