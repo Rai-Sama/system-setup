@@ -134,11 +134,22 @@ vim.opt.rtp:prepend(lazypath)
 
 -- 4. PLUGINS
 require("lazy").setup({
-    -- Clean UI Theme
+    -- Clean UI Theme (Tokyo Night)
     {
-        "navarasu/onedark.nvim",
-        config = function()
-            vim.cmd.colorscheme("onedark")
+        "folke/tokyonight.nvim",
+        lazy = false,
+        priority = 1000, -- Ensure it loads first
+        opts = {
+            transparent = true, -- Allows Kitty's background to show through
+            style = "night",    -- Options: 'storm', 'moon', 'night', or 'day'
+            styles = {
+                sidebars = "transparent",
+                floats = "transparent",
+            },
+        },
+        config = function(_, opts)
+            require("tokyonight").setup(opts)
+            vim.cmd.colorscheme("tokyonight")
         end,
     },
 
