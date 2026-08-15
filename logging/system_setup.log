@@ -362,3 +362,8 @@ Installed via pip: llama-index-readers-file
 # Date: Sunday 09 August 2026 11:43:03 PM IST
 
 Installed via pip: markdown weasyprint
+
+# Installing fastfetch to enable some ricing art in the temrinal on startup. It is written in C and is supposed to not slow down startup (APT)
+# Date: Saturday 15 August 2026 10:31:27 PM IST
+
+Installed via apt: fastfetch
