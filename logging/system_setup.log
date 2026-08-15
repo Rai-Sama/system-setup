@@ -367,3 +367,13 @@ Installed via pip: markdown weasyprint
 # Date: Saturday 15 August 2026 10:31:27 PM IST
 
 Installed via apt: fastfetch
+
+# Installing fastfetch to enable some ricing art in the temrinal on startup. It is written in C and is supposed to not slow down startup (APT)
+# Date: Saturday 15 August 2026 11:51:42 PM IST
+
+Installed via apt: fastfetch
+
+# Installing fastfetch to enable some ricing art in the terminal on startup. It is written in C and is supposed to not slow down startup (APT)
+# Date: Saturday 15 August 2026 11:53:05 PM IST
+
+Installed via apt: fastfetch
