@@ -8,5 +8,5 @@ WIN=$(wmctrl -lx | \
 if [ -n "$WIN" ]; then
     wmctrl -ia "$WIN"
 else
-    brave-browser --new-window &
+    brave-browser --force-device-scale-factor=2.5 --new-window &
 fi
