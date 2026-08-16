@@ -3,10 +3,10 @@
 CURRENT_WS=$(wmctrl -d | awk '$2 == "*" {print $1}')
 
 WIN=$(wmctrl -lx | \
-      awk -v ws="$CURRENT_WS" '$2 == ws && $3 == "Navigator.firefox" {print $1; exit}')
+      awk -v ws="$CURRENT_WS" '$2 == ws && tolower($3) == "brave-browser.brave-browser" {print $1; exit}')
 
 if [ -n "$WIN" ]; then
     wmctrl -ia "$WIN"
 else
-    firefox --new-instance &
+    brave-browser --new-window &
 fi
