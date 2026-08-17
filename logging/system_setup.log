@@ -392,3 +392,13 @@ Installed via apt: brave-browser
 # Date: Monday 17 August 2026 03:37:09 PM IST
 
 Installed via apt: rofi
+
+# Installing eza as an improved cd command (APT)
+# Date: Monday 17 August 2026 05:43:40 PM IST
+
+Installed via apt: eza
+
+# Installing fd-find for a better experience than the default find - works well with fzf (APT)
+# Date: Monday 17 August 2026 05:53:22 PM IST
+
+Installed via apt: fd-find

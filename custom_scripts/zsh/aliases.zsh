@@ -23,3 +23,8 @@ alias media-view='cd ~/everything/projects/media-archiver && conda activate py31
 alias lc="cd ~/everything/learning/dsa/leetcode_sols && leetgo pick"
 # Rofi alias so that the wall of known linux warnings and errors don't show up when it is used
 alias rofi='rofi 2>/dev/null'
+# Eza aliases so that it replaces ls
+# In your aliases.zsh:
+alias ls='eza --icons=always --group-directories-first'
+alias ll='eza -la --icons=always --group-directories-first --git'
+alias lt='eza --tree --level=2 --icons=always'

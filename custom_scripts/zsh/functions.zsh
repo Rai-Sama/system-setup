@@ -79,3 +79,21 @@ ranger() {
 mkignore() {
     cp ~/everything/system/templates/gitignore_template .gitignore
 }
+
+# ==========================================
+# FZF + Batcat + Neovim Integration
+# ==========================================
+fv() {
+    local file
+    # Use fdfind to feed a clean file list into fzf
+    file=$(fdfind --type f --hidden --exclude .git --exclude node_modules --exclude __pycache__ | fzf \
+        --preview 'batcat --theme=ansi --style=numbers --color=always --line-range :500 {}' \
+        --preview-window=right:60%:border-left \
+        --prompt="NeoVim> " \
+        --header="Press ESC to cancel, Enter to edit")
+    
+    # If a file was selected (user didn't press Esc), open it in Neovim
+    if [ -n "$file" ]; then
+        nvim "$file"
+    fi
+}

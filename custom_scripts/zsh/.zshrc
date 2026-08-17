@@ -32,3 +32,7 @@ if [[ -f "$HOME/.local_secrets" ]]; then
 fi
 
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Integrating zoxide as an improved alternative to cd
+eval "$(zoxide init zsh)"
+alias cd='z'

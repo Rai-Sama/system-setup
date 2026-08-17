@@ -32,17 +32,21 @@ while true; do
                     BACK_OPT="⬅️ Go Up One Level"
                 fi
                 
-                OPEN_OPT="✅ Open $(basename "$CURRENT_DIR") in Nemo"
+                OPEN_NEMO_OPT="✅ Open $(basename "$CURRENT_DIR") in Nemo"
+                OPEN_TERM_OPT="💻 Open $(basename "$CURRENT_DIR") in Kitty"
                 
-                DIR_SEL=$(echo -e "$BACK_OPT\n$OPEN_OPT\n$DIR_LIST" | rofi -dmenu -i -p "Explore: $(basename "$CURRENT_DIR")")
+                DIR_SEL=$(echo -e "$BACK_OPT\n$OPEN_NEMO_OPT\n$OPEN_TERM_OPT\n$DIR_LIST" | rofi -dmenu -i -p "Explore: $(basename "$CURRENT_DIR")")
                 
                 if [ -z "$DIR_SEL" ] || [ "$DIR_SEL" = "⬅️ Back to Main Menu" ]; then
                     break
                 elif [ "$DIR_SEL" = "⬅️ Go Up One Level" ]; then
                     CURRENT_DIR=$(dirname "$CURRENT_DIR")
-                elif [ "$DIR_SEL" = "$OPEN_OPT" ]; then
+                elif [ "$DIR_SEL" = "$OPEN_NEMO_OPT" ]; then
                     nemo "$CURRENT_DIR" &
                     exit 0 
+                elif [ "$DIR_SEL" = "$OPEN_TERM_OPT" ]; then
+                    kitty --directory "$CURRENT_DIR" &
+                    exit 0
                 else
                     CURRENT_DIR="$CURRENT_DIR/$DIR_SEL"
                 fi
