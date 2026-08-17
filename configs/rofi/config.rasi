@@ -1,0 +1,10 @@
+configuration {
+    modi: "drun,window,run";
+    show-icons: true;
+    font: "JetBrainsMono Nerd Font 28"; /* Increased for scaled displays */
+    icon-theme: "Mint-Y-Sand";
+    drun-display-format: "{icon} {name}";
+    display-drun: "󰣇 ";
+    display-window: " ";
+}
+@theme "tokyonight"

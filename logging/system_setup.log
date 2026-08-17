@@ -387,3 +387,8 @@ Installed via apt: brave-browser
 # Date: Sunday 16 August 2026 03:05:40 PM IST
 
 Installed via apt: brave-browser
+
+# Installing rofi to set up clean quick launch options for common segmented folders, apps, scripts, websites, etc. (APT)
+# Date: Monday 17 August 2026 03:37:09 PM IST
+
+Installed via apt: rofi

@@ -21,3 +21,5 @@ alias media-find='cd ~/everything/projects/media-archiver && conda activate py31
 alias media-view='cd ~/everything/projects/media-archiver && conda activate py313 && python viewer.py'
 # Leetcode workflow shortcuts
 alias lc="cd ~/everything/learning/dsa/leetcode_sols && leetgo pick"
+# Rofi alias so that the wall of known linux warnings and errors don't show up when it is used
+alias rofi='rofi 2>/dev/null'
