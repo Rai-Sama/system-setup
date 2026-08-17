@@ -127,22 +127,23 @@ while true; do
             fi
             ;;
 
-        "🎬 Media Archiver")
-            MEDIA_OPTS="⬅️ Back\n🔄 Sync\n🔍 Find\n👁️ View"
-            MEDIA_SEL=$(echo -e "$MEDIA_OPTS" | rofi -dmenu -i -p "Media")
-            
-            if [ "$MEDIA_SEL" = "⬅️ Back" ]; then
-                continue
-            elif [ -n "$MEDIA_SEL" ]; then
-                case "$MEDIA_SEL" in
-                    "🔄 Sync") kitty -e zsh -i -c "media-sync" ;;
-                    "🔍 Find") kitty -e zsh -i -c "media-find" ;;
-                    "👁️ View") kitty -e zsh -i -c "media-view" ;;
-                esac
-                break
-            fi
-            ;;
-            
+         "🎬 Media Archiver")
+        MEDIA_OPTS="⬅️ Back\n📱 Backup Phone (ADB)\n🔄 Sync\n🔍 Find\n👁️ View"
+        MEDIA_SEL=$(echo -e "$MEDIA_OPTS" | rofi -dmenu -i -p "Media")
+        
+        if [ "$MEDIA_SEL" = "⬅️ Back" ]; then
+            continue
+        elif [ -n "$MEDIA_SEL" ]; then
+            case "$MEDIA_SEL" in
+                "📱 Backup Phone (ADB)") kitty -e bash ~/everything/system/custom_scripts/bashing/phone_backup.sh & ;;
+                "🔄 Sync") kitty -e zsh -i -c "media-sync" & ;;
+                "🔍 Find") kitty -e zsh -i -c "media-find" & ;;
+                "👁️ View") kitty -e zsh -i -c "media-view" & ;;
+            esac
+            break
+        fi
+        ;;           
+
         "💻 LeetCode Workflow")
             kitty --hold -e zsh -i -c "lc"
             break

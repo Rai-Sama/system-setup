@@ -417,3 +417,8 @@ Installed via apt: sassc
 # Date: Monday 17 August 2026 09:17:56 PM IST
 
 Installed via apt: xclip
+
+# Installing pv for live terminal data streams (APT)
+# Date: Monday 17 August 2026 10:39:45 PM IST
+
+Installed via apt: pv
