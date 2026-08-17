@@ -10,11 +10,11 @@
 }
 
 window {
-    width: 40%;
+    width: 50%;
     border: 2px solid;
     border-color: @primary;
     border-radius: 8px;
-    padding: 10px;
+    padding: 20px;
 }
 
 mainbox {
@@ -40,13 +40,13 @@ entry {
 }
 
 listview {
-    lines: 8;
+    lines: 10;
     padding: 10px 0 0 0;
     border: 0px;
 }
 
 element {
-    padding: 8px;
+    padding: 12px;
     border-radius: 4px;
 }
 
