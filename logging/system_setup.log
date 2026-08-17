@@ -407,3 +407,13 @@ Installed via apt: fd-find
 # Date: Monday 17 August 2026 06:01:16 PM IST
 
 Installed via apt: papirus-icon-theme
+
+# Installing sassc to compile the Tokyo Night GTK theme (APT)
+# Date: Monday 17 August 2026 09:07:29 PM IST
+
+Installed via apt: sassc
+
+# Installing xclip for Neovim system clipboard support (APT)
+# Date: Monday 17 August 2026 09:17:56 PM IST
+
+Installed via apt: xclip

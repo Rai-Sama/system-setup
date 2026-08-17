@@ -310,9 +310,21 @@ require("lazy").setup({
             vim.lsp.config("ruff", { capabilities = capabilities })
             vim.lsp.enable("ruff")
 
-            vim.lsp.config("lua_ls", {
+           vim.lsp.config("lua_ls", {
                 capabilities = capabilities,
-                settings = { Lua = { diagnostics = { globals = { "vim" } } } },
+                settings = {
+                    Lua = {
+                        diagnostics = { globals = { "vim" } },
+                        workspace = {
+                            -- Stop the server from scanning massive hidden folders
+                            ignoreDir = { ".git", "logs", "assets" },
+                            -- Tell the server to load Neovim's native Lua APIs for better autocomplete
+                            library = vim.api.nvim_get_runtime_file("", true),
+                            checkThirdParty = false,
+                        },
+                        telemetry = { enable = false },
+                    },
+                },
             })
             vim.lsp.enable("lua_ls")
 
