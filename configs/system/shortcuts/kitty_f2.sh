@@ -1,23 +1,28 @@
 #!/bin/bash
 
-# 1. Identify the current workspace
 CURRENT_WS=$(wmctrl -d | awk '$2 == "*" {print $1}')
 
-# 2. Find the Kitty window ID strictly on the current workspace
-WIN=$(wmctrl -lx | \
-      awk -v ws="$CURRENT_WS" '$2 == ws && $3 == "kitty.kitty" {print $1; exit}')
+ACTIVE_HEX=$(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x[0-9a-fA-F]*')
+ACTIVE_DEC=$([ -n "$ACTIVE_HEX" ] && printf "%d" "$ACTIVE_HEX" || echo "0")
 
-# 3. Minimize all current windows to reveal the desktop wallpaper
-wmctrl -k on
+WINS=($(wmctrl -lx | awk -v ws="$CURRENT_WS" '$2 == ws && $3 == "kitty.kitty" {print $1}'))
 
-# 4. Give Cinnamon's window manager a tiny fraction of a second to process the animation
-sleep 0.15
-
-# 5. Bring Kitty back up
-if [ -n "$WIN" ]; then
-    # If it was already open (and just got minimized), this un-minimizes and focuses it
-    wmctrl -ia "$WIN"
-else
-    # If it wasn't open, launch a fresh instance
+if [ ${#WINS[@]} -eq 0 ]; then
+    wmctrl -k on
+    sleep 0.15
     kitty &
+else
+    NEXT_WIN=${WINS[0]}
+    for i in "${!WINS[@]}"; do
+        WIN_DEC=$(printf "%d" "${WINS[$i]}")
+        if [ "$WIN_DEC" -eq "$ACTIVE_DEC" ]; then
+            NEXT_INDEX=$(( (i + 1) % ${#WINS[@]} ))
+            NEXT_WIN=${WINS[$NEXT_INDEX]}
+            break
+        fi
+    done
+    
+    wmctrl -k on
+    sleep 0.15
+    wmctrl -ia "$NEXT_WIN"
 fi

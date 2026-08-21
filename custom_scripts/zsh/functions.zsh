@@ -99,12 +99,10 @@ fv() {
 }
 
 # ==========================================
-# Neovim Detached Launcher
+# Neovim Detached Launcher (Show Desktop Mode)
 # ==========================================
 nv() {
-    # Instantly minimize the current terminal window
-    xdotool windowminimize $(xdotool getactivewindow)
-    
-    # Launch Neovim in a new detached Kitty window
-    kitty -1 nvim "$@" &!
+    wmctrl -k on
+    sleep 0.15
+    kitty --class NeovimTerm nvim "$@" &!
 }
