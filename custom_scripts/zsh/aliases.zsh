@@ -5,7 +5,6 @@ alias gitc='git commit -m'
 alias gitl='git log --oneline --graph --all --decorate'
 alias sup='sudo apt update && sudo apt upgrade -y'
 alias clr='clear'
-alias nv='nvim'  # Or 'vim' if you prefer
 alias cat='batcat'
 alias logapt='logpkg apt'
 alias logpip='logpkg pip'

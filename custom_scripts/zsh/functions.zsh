@@ -97,3 +97,14 @@ fv() {
         nvim "$file"
     fi
 }
+
+# ==========================================
+# Neovim Detached Launcher
+# ==========================================
+nv() {
+    # Instantly minimize the current terminal window
+    xdotool windowminimize $(xdotool getactivewindow)
+    
+    # Launch Neovim in a new detached Kitty window
+    kitty -1 nvim "$@" &!
+}
