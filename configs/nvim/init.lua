@@ -3,6 +3,10 @@
 -- ==========================================================================
 
 -- 1. CORE OPTIONS
+-- Sync with Linux system clipboard
+vim.opt.clipboard = "unnamedplus"  
+-- Lock internal Python engine to dedicated Conda environment
+vim.g.python3_host_prog = vim.fn.expand("~/miniconda3/envs/nvim-host/bin/python")
 vim.g.mapleader = " "              -- Set space as the leader key
 vim.opt.number = true              -- Show line numbers
 vim.opt.relativenumber = true      -- Use relative line numbers for easy jumping
@@ -39,7 +43,7 @@ keymap({"n", "v"}, "<leader>x", "\"_x", { desc = "Delete Char (No Copy)" })
 keymap("n", "<leader>r", function()
     local ft = vim.bo.filetype
     vim.cmd("write") -- Auto-save before running
-    
+
     local cmd = ""
     if ft == "python" then
         cmd = "python3 %"
@@ -64,7 +68,7 @@ keymap("n", "<leader>r", function()
             vim.api.nvim_buf_delete(buf, { force = true })
         end
     end
-    
+
     vim.cmd("15split | term " .. cmd)
     vim.cmd("setlocal nobuflisted")
     vim.b.is_code_runner = true -- Tag this specific buffer as the runner
@@ -173,13 +177,13 @@ require("lazy").setup({
         build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = { 
-                    "python", "lua", "bash", "markdown", "markdown_inline",
-                    "c", "cpp", "cmake", "javascript", "html", "css", "json", "sql", "yaml" 
-                },
-                highlight = { enable = true },
-                indent = { enable = true },
-            })
+            ensure_installed = { 
+                "python", "lua", "bash", "markdown", "markdown_inline",
+                "c", "cpp", "cmake", "javascript", "html", "css", "json", "sql", "yaml", "latex"
+            },
+            highlight = { enable = true },
+            indent = { enable = true },
+        })
         end,
     },
 
