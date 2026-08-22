@@ -1,4 +1,7 @@
-fastfetch
+# Only run fastfetch if the terminal window is wider than 70 columns and taller than 15 lines
+if [[ $LINES -gt 15 && $COLUMNS -gt 70 ]]; then
+    fastfetch
+fi
 
 # Enable Powerlevel10k instant prompt.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
