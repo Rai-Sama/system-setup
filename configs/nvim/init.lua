@@ -3,8 +3,6 @@
 -- ==========================================================================
 
 -- 1. CORE OPTIONS
--- Sync with Linux system clipboard
-vim.opt.clipboard = "unnamedplus"  
 -- Lock internal Python engine to dedicated Conda environment
 vim.g.python3_host_prog = vim.fn.expand("~/miniconda3/envs/nvim-host/bin/python")
 vim.g.mapleader = " "              -- Set space as the leader key
@@ -44,19 +42,21 @@ keymap("n", "<leader>r", function()
     local ft = vim.bo.filetype
     vim.cmd("write") -- Auto-save before running
 
+    local file = vim.fn.shellescape(vim.fn.expand("%"))
+
     local cmd = ""
     if ft == "python" then
-        cmd = "python3 %"
+        cmd = "python3 " .. file
     elseif ft == "sh" then
-        cmd = "bash %"
+        cmd = "bash " .. file
     elseif ft == "lua" then
-        cmd = "lua %"
+        cmd = "lua " .. file
     elseif ft == "javascript" then
-        cmd = "node %"
+        cmd = "node " .. file
     elseif ft == "c" then
-        cmd = "gcc % -o /tmp/c_out && /tmp/c_out"
+        cmd = "gcc " .. file .. " -o /tmp/c_out && /tmp/c_out"
     elseif ft == "cpp" then
-        cmd = "g++ % -o /tmp/cpp_out && /tmp/cpp_out"
+        cmd = "g++ " .. file .. " -o /tmp/cpp_out && /tmp/cpp_out"
     else
         print("No runner configured for filetype: " .. ft)
         return
@@ -161,13 +161,15 @@ require("lazy").setup({
     {
         "nvim-tree/nvim-tree.lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
+        keys = {
+            { "<leader>e", "<cmd>NvimTreeToggle<CR>", desc = "Toggle Explorer" },
+        },
         config = function()
             require("nvim-tree").setup({
                 view = { width = 30 },
                 renderer = { group_empty = true },
                 filters = { dotfiles = false },
             })
-            vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle Explorer" })
         end,
     },
 
@@ -201,6 +203,7 @@ require("lazy").setup({
     -- Markdown Rendering
     {
         "MeanderingProgrammer/render-markdown.nvim",
+        ft = "markdown",
         opts = {},
         dependencies = { 
             "nvim-treesitter/nvim-treesitter", 
@@ -280,6 +283,9 @@ require("lazy").setup({
                     "pyright", "lua_ls", "bashls", "ruff",
                     "clangd", "ts_ls", "html", "cssls", "jsonls", "marksman", "sqlls" 
                 },
+                -- We call vim.lsp.enable() explicitly below per server, so turn off
+                -- mason-lspconfig's own auto-enable to avoid two sources of truth.
+                automatic_enable = false,
             })
 
             -- 4b. Restored LSP Keybindings (LspAttach)
@@ -308,6 +314,22 @@ require("lazy").setup({
 
             vim.lsp.config("pyright", {
                 capabilities = capabilities,
+                settings = {
+                    pyright = {
+                        -- Ruff already organizes imports (see BufWritePre autocmd below)
+                        disableOrganizeImports = true,
+                    },
+                    python = {
+                        analysis = {
+                            typeCheckingMode = "basic",
+                            -- Ruff handles these; avoid duplicate diagnostics from pyright
+                            diagnosticSeverityOverrides = {
+                                reportUnusedImport = "none",
+                                reportUnusedVariable = "none",
+                            },
+                        },
+                    },
+                },
             })
             vim.lsp.enable("pyright")
             
@@ -423,7 +445,7 @@ require("lazy").setup({
                             return require("codecompanion.adapters").extend("gemini", {
                                 schema = {
                                     model = {
-                                        default = "gemini-3.6-flash",
+                                        default = "gemini-3.5-flash",
                                     },
                                 },
                             })
