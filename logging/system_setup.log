@@ -427,3 +427,8 @@ Installed via apt: pv
 # Date: Monday 16 November 2026 11:26:35 PM IST
 
 Installed uv for Python packages - it is a Rust implementation of Python Package manager and thus much faster than pip and conda. It is the official tool used in MCP docs and other new docs so it is helpful to follow them
+
+# Installing claude desktop to follow the MCP documentation demos and also for general use and exploration (APT)
+# Date: Tuesday 17 November 2026 12:47:33 AM IST
+
+Installed via apt: claude-desktop
